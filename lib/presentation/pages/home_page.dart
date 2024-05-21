@@ -1,4 +1,9 @@
 import 'package:clean_code/domain/use_cases/get_all_products_usecase.dart';
+import 'package:clean_code/domain/use_cases/get_product_byid_usercase.dart';
+import 'package:clean_code/domain/use_cases/update_product_usecase.dart';
+import 'package:clean_code/presentation/components/dialog_create_product.dart';
+import 'package:clean_code/presentation/components/dialog_delete_product.dart';
+import 'package:clean_code/presentation/components/dialog_update_product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomeAdmiPageState extends State<HomePage> {
   late Future<List<ProductModel>> futureProducts;
   final getAllProductsUseCase = GetAllProductsUseCase(ProductRepositoryImpl());
+  final getProductByIdUseCase = GetProductByIdUseCase(ProductRepositoryImpl());
 
   @override
   void initState() {
@@ -24,6 +30,46 @@ class _HomeAdmiPageState extends State<HomePage> {
       futureProducts = getAllProductsUseCase.execute(token);
     } else {
       futureProducts = Future.error('User is not authenticated');
+    }
+  }
+
+  Future<void> _showDeleteDialog(int productId) async {
+    try {
+      final token =
+          Provider.of<UserProvider>(context, listen: false).user?.token;
+      final product = await getProductByIdUseCase.execute(productId, token!);
+      showDialog(
+        context: context,
+        builder: (context) => MyDialogDeleteProduct(
+          productId: productId,
+          product: product,
+        ),
+      );
+    } catch (error) {
+      print('Error al obtener los datos del producto: $error');
+    }
+  }
+
+  addProductAlert() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const MyDialogAddProduct();
+      },
+    );
+  }
+
+  Future<void> _showUpdateDialog(int productId) async {
+    try {
+      final token = Provider.of<UserProvider>(context, listen: false).user?.token;
+      showDialog(
+        context: context,
+        builder: (context) => MyDialogUpdateProduct(
+          productId: productId,
+        ),
+      );
+    } catch (error) {
+      print('Error al obtener los datos del producto: $error');
     }
   }
 
@@ -81,7 +127,7 @@ class _HomeAdmiPageState extends State<HomePage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                       
+                        addProductAlert();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF88B04F),
@@ -131,10 +177,10 @@ class _HomeAdmiPageState extends State<HomePage> {
                         stock: product.stock,
                         price: product.price,
                         onDelete: () {
-                         
+                          _showDeleteDialog(product.id);
                         },
                         onEdit: () {
-                          
+                          _showUpdateDialog(product.id);
                         },
                       );
                     }).toList(),
