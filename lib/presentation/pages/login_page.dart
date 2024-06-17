@@ -1,4 +1,4 @@
-import 'package:clean_code/infraestructure/providers/user_provider.dart';
+import 'package:clean_code/presentation/providers/user_provider.dart';
 import 'package:clean_code/presentation/pages/home_page.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';

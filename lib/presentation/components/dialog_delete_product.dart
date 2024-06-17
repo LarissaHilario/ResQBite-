@@ -1,11 +1,10 @@
-import 'package:clean_code/domain/models/product_model.dart';
-import 'package:clean_code/domain/use_cases/delete_product_usecase.dart';
-import 'package:clean_code/domain/use_cases/get_product_byid_usercase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:clean_code/infraestructure/repositories/product_repository_impl.dart';
-import 'package:clean_code/infraestructure/providers/user_provider.dart';
+import 'package:clean_code/domain/models/product_model.dart';
+import 'package:clean_code/domain/use_cases/delete_product_usecase.dart';
+import 'package:clean_code/domain/use_cases/get_product_byid_usercase.dart';
+import 'package:clean_code/presentation/providers/user_provider.dart';
 
 class MyDialogDeleteProduct extends StatefulWidget {
   final int productId;
@@ -31,14 +30,14 @@ class _MyDialogDeleteProductState extends State<MyDialogDeleteProduct> {
 
   void _fetchProductData() {
     final token = Provider.of<UserProvider>(context, listen: false).user?.token;
-    final getProductByIdUseCase = GetProductByIdUseCase(ProductRepositoryImpl());
+    final getProductByIdUseCase = Provider.of<GetProductByIdUseCase>(context, listen: false);
     _productFuture = getProductByIdUseCase.execute(widget.productId, token!);
   }
 
   Future<void> deleteProduct() async {
     try {
       final token = Provider.of<UserProvider>(context, listen: false).user?.token;
-      final deleteProductUseCase = DeleteProductUseCase(ProductRepositoryImpl());
+      final deleteProductUseCase = Provider.of<DeleteProductUseCase>(context, listen: false);
       await deleteProductUseCase.execute(widget.productId, token!);
       closeAlert();
     } catch (error) {

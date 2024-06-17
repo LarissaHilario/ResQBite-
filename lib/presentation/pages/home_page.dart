@@ -9,24 +9,22 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:clean_code/domain/models/product_model.dart';
 import 'package:clean_code/infraestructure/repositories/product_repository_impl.dart';
-import 'package:clean_code/infraestructure/providers/user_provider.dart';
+import 'package:clean_code/presentation/providers/user_provider.dart';
 import 'package:clean_code/presentation/components/product_card_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomeAdmiPageState();
 }
-
 class _HomeAdmiPageState extends State<HomePage> {
   late Future<List<ProductModel>> futureProducts;
-  final getAllProductsUseCase = GetAllProductsUseCase(ProductRepositoryImpl());
-  final getProductByIdUseCase = GetProductByIdUseCase(ProductRepositoryImpl());
 
   @override
   void initState() {
     super.initState();
     final token = Provider.of<UserProvider>(context, listen: false).user?.token;
     if (token != null) {
+      final getAllProductsUseCase = Provider.of<GetAllProductsUseCase>(context, listen: false);
       futureProducts = getAllProductsUseCase.execute(token);
     } else {
       futureProducts = Future.error('User is not authenticated');
@@ -37,6 +35,7 @@ class _HomeAdmiPageState extends State<HomePage> {
     try {
       final token =
           Provider.of<UserProvider>(context, listen: false).user?.token;
+      final getProductByIdUseCase = Provider.of<GetProductByIdUseCase>(context, listen: false);
       final product = await getProductByIdUseCase.execute(productId, token!);
       showDialog(
         context: context,
@@ -50,7 +49,7 @@ class _HomeAdmiPageState extends State<HomePage> {
     }
   }
 
-  addProductAlert() {
+  void addProductAlert() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -72,7 +71,6 @@ class _HomeAdmiPageState extends State<HomePage> {
       print('Error al obtener los datos del producto: $error');
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

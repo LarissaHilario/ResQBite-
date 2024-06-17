@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:clean_code/domain/repositories/product_repository.dart';
 import 'package:clean_code/domain/use_cases/update_product_usecase.dart';
-import 'package:clean_code/infraestructure/providers/user_provider.dart';
+import 'package:clean_code/presentation/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
